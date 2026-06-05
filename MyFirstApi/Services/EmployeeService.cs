@@ -2,6 +2,7 @@
 using MyFirstApi.IService;
 using MyFirstApi.Dto;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MyFirstApi.Services
 {
@@ -20,7 +21,7 @@ namespace MyFirstApi.Services
                     DOB = x.DOB,
                     Name = x.Name,
                     EmailAddress = x.EmailAddress,
-                    Postition = x.Postition
+                    Position = x.Position
                 }).ToListAsync());
 
             }
@@ -30,7 +31,7 @@ namespace MyFirstApi.Services
             }
         }
 
-        public async Task<Tuple<int, string>> CreateEmployee(EmployeeDto employee)
+        public async Task<Tuple<int, string>> CreateEmployee([FromBody]EmployeeDto employee)
         {
             var existing = await _context.Employees.AnyAsync(x => x.EmailAddress == employee.EmailAddress);
 
@@ -42,13 +43,13 @@ namespace MyFirstApi.Services
             await _context.Employees.AddAsync(new Entities.Employee
             {
                 Id = Guid.NewGuid(),
-                    CreatedDate = DateTime.Now,
+                CreatedDate = DateTime.Now,
                 LastModifiedDate = null,
                 Department = employee.Department,
                 DOB = employee.DOB,
                 Name = employee.Name,
                 EmailAddress = employee.EmailAddress,
-                Postition = employee.Postition
+                Position = employee.Position
             });
             await _context.SaveChangesAsync();
 

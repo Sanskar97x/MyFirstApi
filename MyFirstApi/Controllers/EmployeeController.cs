@@ -30,5 +30,24 @@ namespace MyFirstApi.Controllers
                 throw;
             }
         }
+
+        [HttpPost("CreateEmployee")]
+        public async Task<IActionResult> CreateEmployee([FromBody]EmployeeDto employeeDto)
+        {
+            try
+            {
+                var result = await employeeService.CreateEmployee(employeeDto);
+
+                if (result.Item1 == 0)
+                {
+                    return Ok(ResponseResult<string>.Failure(null, result.Item2));
+                }
+                return Ok(ResponseResult<string>.Success(null, result.Item2));
+            }
+            catch(Exception)
+            {
+                throw;
+            }
+        }
     }
 }
