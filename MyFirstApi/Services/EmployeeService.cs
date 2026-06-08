@@ -55,5 +55,26 @@ namespace MyFirstApi.Services
 
             return new Tuple<int, string>(1, "Employee created successfully");
         }
+
+        public async Task<Tuple<int,string>> UpdateEmployee(EmployeeDto employee)
+        {
+            var existing = await _context.Employees.FirstOrDefaultAsync(x => x.EmailAddress == employee.EmailAddress);
+
+            if(existing == null)
+            {
+                return new Tuple<int, string>(0, "Employee not found with given Email Id"); 
+            }
+
+            existing.Position = string.IsNullOrWhiteSpace(employee.Position) ? existing.Position : employee.Position;
+            existing.DOB = employee.DOB ?? existing.DOB;
+            existing.Name = string.IsNullOrWhiteSpace(employee.Name) ? existing.Name : employee.Name;
+            existing.EmailAddress = string.IsNullOrWhiteSpace(employee.EmailAddress)?existing.EmailAddress: employee.EmailAddress;
+            existing.Department = string.IsNullOrWhiteSpace(employee.Department) ? existing.Department : employee.Department;
+
+            _context.Employees.Update(existing);
+            await _context.SaveChangesAsync();
+
+            return new Tuple<int, string>(1, "Employee updated successfully");
+        }
     }
 }
