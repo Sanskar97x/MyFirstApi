@@ -58,6 +58,10 @@ namespace MyFirstApi.Services
 
         public async Task<Tuple<int,string>> UpdateEmployee(EmployeeDto employee)
         {
+            if (employee == null)
+            {
+                return new Tuple<int, string>(0, "Please Fill All The Details");
+            }
             var existing = await _context.Employees.FirstOrDefaultAsync(x => x.EmailAddress == employee.EmailAddress);
 
             if(existing == null)
@@ -75,6 +79,19 @@ namespace MyFirstApi.Services
             await _context.SaveChangesAsync();
 
             return new Tuple<int, string>(1, "Employee updated successfully");
+        }
+
+        public async Task<Tuple<int, string>> DeleteEmployee(Guid id) 
+        {
+            var data = await _context.Employees.FirstOrDefaultAsync(x => x.Id == id);
+            if (data == null)
+            {
+                return new Tuple<int, string>(0, "Employee Not Exist With This Id"); 
+            }
+            _context.Employees.Remove(data);
+            await _context.SaveChangesAsync();
+
+            return new Tuple<int, string>(1, "Employee Deleted Successfully");
         }
     }
 }

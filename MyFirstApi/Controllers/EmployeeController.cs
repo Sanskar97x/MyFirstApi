@@ -49,5 +49,23 @@ namespace MyFirstApi.Controllers
                 throw;
             }
         }
+
+        [HttpPut("UpdateEmployee")]
+        public async Task<IActionResult> UpdateEmployee([FromBody] EmployeeDto employeeDto)
+        {
+            try 
+            {
+                var result = await employeeService.UpdateEmployee(employeeDto);
+                if (result.Item1 == 0)
+                {
+                    return Ok(ResponseResult<string>.Failure(null, result.Item2));
+                }
+                return Ok(ResponseResult<string>.Success(null, result.Item2));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
