@@ -1,8 +1,12 @@
 ﻿
+using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Tokens;
 using MyFirstApi.Data;
 using MyFirstApi.Dto;
 using MyFirstApi.IService;
@@ -18,53 +22,42 @@ namespace MyFirstApi.Services
             _context = context;
         }
 
-        public async Task<Tuple<int, string>> LoginUser(UserDto dto)
+
+        private string GetJwtToken(UserDto dto)
         {
-            try
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+
+            if (string.IsNullOrWhiteSpace(dto.Name))
+                throw new InvalidOperationException("User name cannot be null or empty");
+
+            var claims = new[]
             {
-                if (dto==null)
-                {
-                    return new Tuple<int, string>(1, "Please Fill All The Details");
-                }
+        new Claim(ClaimTypes.Name, dto.Name),
+        new Claim(ClaimTypes.NameIdentifier, dto.Id.ToString())
+    };
 
-                var existingUser = await _context.AccountUsers.FirstOrDefaultAsync(x => x.Email == dto.Email);
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("yjhL7EPo4cdohugQWG1PR7kMD1mPy0DUJBMUq2YkK2W")
+            );
 
-                if (existingUser == null)
-                {
-                    return new Tuple<int, string>(0, "This User Not Exist, Please Login");
-                }
-                //if (existingUser.Password != dto.Password)
-                //{
-                //    return new Tuple<int, string>(1, "Password Is Incorrect");
-                //}
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                var PasswordHasher = new PasswordHasher<string>();
-                var verifyPassword = PasswordHasher.VerifyHashedPassword(dto.Email, existingUser.Password, dto.Password);
-
-                if ( verifyPassword == PasswordVerificationResult.Success)
-                {
-                    return new Tuple<int, string>(2, "Login Successful");
-                }
-
-                else if(verifyPassword == PasswordVerificationResult.SuccessRehashNeeded)
-                {
-                    existingUser.Password = PasswordHashing(dto);
-                    _context.AccountUsers.Update(existingUser);
-                    _context.SaveChanges();
-                    return new Tuple<int, string>(2, "Login Successful, New Hash Generated");
-                }
-
-                else if(verifyPassword == PasswordVerificationResult.Failed)
-                {
-                    return new Tuple<int, string>(1, "Password Is Incorrect");
-                }
-                return new Tuple<int, string>(1, "");
-            }
-            catch (Exception)
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                throw;
-            }
+                Subject = new ClaimsIdentity(claims),
+                Issuer = "rohan-client",
+                Audience = "rohan-backend",
+                Expires = DateTime.UtcNow.AddMinutes(1),
+                SigningCredentials = creds
+            };
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.CreateToken(tokenDescriptor);
+
+            return handler.WriteToken(token);
         }
+
         public async Task<Tuple<int, string>>RegisterUser(UserDto dto)
         {
             try
@@ -85,6 +78,7 @@ namespace MyFirstApi.Services
                 });
 
                 await _context.SaveChangesAsync();
+
 
                 return new Tuple<int, string>(1, "User Registered Successfully");
             }
