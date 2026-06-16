@@ -18,27 +18,28 @@ namespace MyFirstApi.Controllers
             _authService = authService;
         }
 
+
         [HttpPost("Login")]
-        public async Task<IActionResult>Login([FromBody]UserDto userDto)
+        public async Task<IActionResult> Login([FromBody] UserDto userDto)
         {
             try
             {
                 var result = await _authService.LoginUser(userDto);
-                if (result.Item1==0)
+                if (result.Item1 == 0)
                 {
                     return NotFound(ResponseResult<TokenDto>.Failure(result.Item2, result.Item2.Message));
                 }
-                if (result.Item1==1)
+                if (result.Item1 == 1)
                 {
                     return BadRequest(ResponseResult<TokenDto>.Failure(result.Item2, result.Item2.Message));
                 }
                 if (result.Item1 == 2)
                 {
-                    return Ok(ResponseResult<TokenDto>.Success(result.Item2,result.Item2.Message));
+                    return Ok(ResponseResult<TokenDto>.Success(result.Item2, result.Item2.Message));
                 }
                 return StatusCode(500, "Unexpected result code.");
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
@@ -69,6 +70,9 @@ namespace MyFirstApi.Controllers
 
     }
 }
+
+
+
 
 
 
