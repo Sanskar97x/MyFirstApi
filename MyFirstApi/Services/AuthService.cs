@@ -21,6 +21,33 @@ namespace MyFirstApi.Services
         {
             _context = context;
         }
+        public async Task<Tuple<int, TokenDto>> LoginUser(UserDto dto)
+        {
+            try
+            {
+                var tokenDto = new TokenDto();
+                if (dto == null)
+                {
+                    tokenDto.Message = "Please Fill All The Details";
+                    return new Tuple<int, TokenDto>(1, tokenDto);
+                }
+
+                var existingUser = await _context.AccountUsers.FirstOrDefaultAsync(x => x.Email == dto.Email);
+
+ 
+                //if (existingUser.Password != dto.Password)
+                //{
+                //    return new Tuple<int, TokenDto>(1, "Password Is Incorrect");
+                //}
+
+                tokenDto.Message = "This User Not Exist, Please Login";
+                return new Tuple<int, TokenDto>(0, tokenDto);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
 
         private string GetJwtToken(UserDto dto)
