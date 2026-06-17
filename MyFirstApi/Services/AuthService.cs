@@ -31,6 +31,26 @@ namespace MyFirstApi.Services
                     tokenDto.Message = "Please Fill All The Details";
                     return new Tuple<int, TokenDto>(1, tokenDto);
                 }
+<<<<<<< HEAD
+=======
+
+                var existingUser = await _context.AccountUsers.FirstOrDefaultAsync(x => x.Email == dto.Email);
+
+ 
+                //if (existingUser.Password != dto.Password)
+                //{
+                //    return new Tuple<int, TokenDto>(1, "Password Is Incorrect");
+                //}
+
+                tokenDto.Message = "This User Not Exist, Please Login";
+                return new Tuple<int, TokenDto>(0, tokenDto);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+>>>>>>> 964e578b621e8deeceaa5e7bfb370fff84c00435
 
                 var existingUser = await _context.AccountUsers.FirstOrDefaultAsync(x => x.Email == dto.Email);
 
