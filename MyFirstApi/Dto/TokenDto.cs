@@ -1,4 +1,6 @@
-﻿namespace MyFirstApi.Dto
+﻿using MyFirstApi.Dto;
+
+namespace MyFirstApi.Dto
 {
     public class TokenDto
     {
@@ -6,3 +8,4 @@
         public string Message { get; set; } = string.Empty;
     }
 }
+

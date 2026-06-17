@@ -63,9 +63,11 @@ namespace MyFirstApi.Services
                     return new Tuple<int, TokenDto>(2, tokenDto);
 
                 }
-                return new Tuple<int, TokenDto>(2, tokenDto);
+
+                tokenDto.Message = "This User Not Exist, Please Login";
+                return new Tuple<int, TokenDto>(0, tokenDto);
             }
-            catch
+            catch (Exception)
             {
                 throw;
             }
