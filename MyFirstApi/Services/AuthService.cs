@@ -21,7 +21,55 @@ namespace MyFirstApi.Services
         {
             _context = context;
         }
+        public async Task<Tuple<int, TokenDto>> LoginUser(UserDto dto)
+        {
+            try
+            {
+                var tokenDto = new TokenDto();
+                if (dto == null)
+                {
+                    tokenDto.Message = "Please Fill All The Details";
+                    return new Tuple<int, TokenDto>(1, tokenDto);
+                }
 
+                var existingUser = await _context.AccountUsers.FirstOrDefaultAsync(x => x.Email == dto.Email);
+
+                if (existingUser == null)
+                {
+                    tokenDto.Message = "This User Does Not Exist, Please Register";
+                    return new Tuple<int, TokenDto>(0, tokenDto);
+                }
+
+                //if (existingUser.Password != dto.Password)
+                //{
+                //    return new Tuple<int, TokenDto>(1, "Password Is Incorrect");
+                //}
+
+
+                var PasswordHasher = new PasswordHasher<string>();
+                var verifyPassword = PasswordHasher.VerifyHashedPassword(dto.Email, existingUser.Password, dto.Password);
+
+                //if (verifyPassword == PasswordVerificationResult.Success)
+                //{
+                //    UserDto user = new();
+                //    user.Email = dto.Email;
+                //    user.Id = existingUser.Id;
+                //    user.Name = existingUser.Name;
+                //    var token = GetJwtToken(user);
+
+                //    tokenDto.Token = token;
+                //    tokenDto.Message = "Login Successfull";
+
+                //    return new Tuple<int, TokenDto>(2, tokenDto);
+
+                //}
+                return new Tuple<int, TokenDto>(2, tokenDto);
+            }
+            catch
+            {
+                throw;
+            }
+        }
 
         private string GetJwtToken(UserDto dto)
         {
