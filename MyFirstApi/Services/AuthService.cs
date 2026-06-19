@@ -63,8 +63,7 @@ namespace MyFirstApi.Services
                     return new Tuple<int, TokenDto>(2, tokenDto);
 
                 }
-<<<<<<< HEAD
-=======
+
                 else if (verifyPassword == PasswordVerificationResult.SuccessRehashNeeded)
                 {
                     UserDto user = new();
@@ -82,7 +81,11 @@ namespace MyFirstApi.Services
 
                     return new Tuple<int, TokenDto>(2, tokenDto);
                 }
->>>>>>> 220f8bc (Condition For SuccessRehashNeeded)
+                else if (verifyPassword == PasswordVerificationResult.Failed)
+                {
+                    tokenDto.Message = "Password Is Incorrect";
+                    return new Tuple<int, TokenDto>(1, tokenDto);
+                }
 
                 tokenDto.Message = "This User Not Exist, Please Login";
                 return new Tuple<int, TokenDto>(0, tokenDto);
